@@ -7,13 +7,15 @@ require 'org_dayone'
 
 opts = Slop.parse do |o|
   o.string '-m', '--mode',     'mode (sync_org)'
-  o.string '-o', '--org_file'
   o.bool   '-v', '--verbose',  'enable verbose mode'
 end
 
 case opts[:mode]
 when 'sync_org'
-  # TODO
+  headlines = OrgDayone::Headline.parse(STDIN)
+  headlines.each do |h|
+    OrgDayone.api.create h.to_markdown
+  end
 when 'debug'
   debugger
   puts "Time to debug..."
