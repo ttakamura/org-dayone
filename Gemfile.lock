@@ -1,0 +1,17 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    byebug (8.2.0)
+    dotenv (2.0.2)
+    slop (4.2.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  byebug
+  dotenv
+  slop
+
+BUNDLED WITH
+   1.10.6
