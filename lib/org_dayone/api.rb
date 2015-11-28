@@ -3,17 +3,19 @@ require "tempfile"
 
 module OrgDayone
   class API
-    def create body
+    def create body, date: nil
       if has_post?(body)
         puts "Skip already posted in DayOne - #{body}"
         return false
       end
 
+      date_option = date ? "--date='#{date}' " : " "
+
       file = Tempfile.new('dayone')
       begin
         file.write body
         file.flush
-        res = `cat #{file.path} | dayone new`.chomp
+        res = `cat #{file.path} | dayone #{date_option} new`.chomp
         if m = res.match(/New entry : (.+)$/)
           commit body, m[1]
           true
