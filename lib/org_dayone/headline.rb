@@ -18,6 +18,7 @@ module OrgDayone
           sub_headlines = []
         end
       end
+      top_headlines << self.new(current_h, sub_headlines)
 
       top_headlines
     end
@@ -34,8 +35,10 @@ module OrgDayone
     def to_markdown
       normalize [
         title,
+        "",
         body,
-        @sub_headlines.map{ |h| h.to_markdown }
+        @sub_headlines.map{ |h| h.to_markdown },
+        ""
       ].flatten.compact.join("\n")
     end
 
