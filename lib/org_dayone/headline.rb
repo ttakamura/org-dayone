@@ -2,6 +2,7 @@
 module OrgDayone
   class Headline
     include Logging
+    extend Logging
     attr_reader :sub_headlines
 
     def self.parse_inbox_file file, date
