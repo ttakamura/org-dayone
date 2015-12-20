@@ -1,6 +1,33 @@
+# coding: utf-8
 module OrgDayone
   class Headline
+    include Logging
     attr_reader :sub_headlines
+
+    def self.parse_inbox_file file, date
+      log.info "Start parse_inbox_file #{file}, #{date}"
+      loading = false
+      inputs  = []
+
+      open(file, 'r').each_line do |line|
+        if loading
+          if line =~ /^\*\* /
+            break # 次の日に移動した
+          end
+          inputs << line
+        else
+          if line =~ /^\*\* #{date}/
+            log.info "Found the date header - #{line}"
+            loading = true
+          end
+        end
+      end
+
+      headlines = OrgDayone::Headline.parse(StringIO.new(inputs.join("\n")))
+      headlines.each do |h|
+        OrgDayone.api.create h.to_markdown, date: date
+      end
+    end
 
     def self.parse io
       parser = Orgmode::Parser.new(io.read)

@@ -3,10 +3,14 @@ require "tempfile"
 
 module OrgDayone
   class API
+    include Logging
+
     def create body, date: nil
       if has_post?(body)
-        puts "Skip already posted in DayOne - #{body}"
+        log.info "Skip already posted in DayOne - #{body}"
         return false
+      else
+        log.info "Create new post - #{body}"
       end
 
       date_option = date ? "--date='#{date}' " : " "

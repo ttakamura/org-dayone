@@ -7,6 +7,16 @@ module OrgDayone
     def db
       @db ||= OrgDayone::DB.new("db/dayone.yaml")
     end
+
+    def logger
+      @logger = Logger.new("log/dayone.log")
+    end
+  end
+
+  module Logging
+    def log
+      OrgDayone.logger
+    end
   end
 end
 
