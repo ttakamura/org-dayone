@@ -13,7 +13,7 @@ module OrgDayone
         log.info "Create new post - #{body}"
       end
 
-      journal_option = "'~/Library/Group Containers/5U8NS4GX82.dayoneapp2/Data/Auto Import/Default Journal.dayone'"
+      journal_option = "-j='~/Library/Group Containers/5U8NS4GX82.dayoneapp2/Data/Auto Import/Default Journal.dayone'"
       date_option    = date ? "--date='#{date}' " : " "
 
       file = Tempfile.new('dayone')
