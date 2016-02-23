@@ -13,13 +13,14 @@ module OrgDayone
         log.info "Create new post - #{body}"
       end
 
-      date_option = date ? "--date='#{date}' " : " "
+      journal_option = "'~/Library/Group Containers/5U8NS4GX82.dayoneapp2/Data/Auto Import/Default Journal.dayone'"
+      date_option    = date ? "--date='#{date}' " : " "
 
       file = Tempfile.new('dayone')
       begin
         file.write body
         file.flush
-        res = `cat #{file.path} | dayone #{date_option} new`.chomp
+        res = `cat #{file.path} | dayone #{journal_option} #{date_option} new`.chomp
         if m = res.match(/New entry : (.+)$/)
           commit body, m[1]
           true
