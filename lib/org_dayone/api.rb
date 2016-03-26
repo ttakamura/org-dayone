@@ -29,7 +29,7 @@ module OrgDayone
       end
     end
 
-    def create_by_ifttt body, secret: nil
+    def create_by_ifttt body, secret: ENV['IFTTT_SECRET']
       try_create(body) do
         event = 'post_dayone'
         response = HTTParty.post("https://maker.ifttt.com/trigger/#{event}/with/key/#{secret}", {
@@ -38,6 +38,7 @@ module OrgDayone
                                  })
         if response.code == 200
           log.info response.body
+          commit body, rand.to_s
         else
           log.error response.inspect
           raise response.body
