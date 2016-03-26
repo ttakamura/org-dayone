@@ -19,7 +19,7 @@ when 'sync_inbox'
 when 'sync_org'
   headlines = OrgDayone::Headline.parse(STDIN)
   headlines.each do |h|
-    OrgDayone.api.create h.to_markdown, date: opts[:date]
+    OrgDayone.api.create_by_ifttt h.to_markdown
   end
 
 when 'debug'

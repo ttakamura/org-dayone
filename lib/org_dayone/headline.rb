@@ -26,7 +26,7 @@ module OrgDayone
 
       headlines = OrgDayone::Headline.parse(StringIO.new(inputs.join("\n")))
       headlines.each do |h|
-        OrgDayone.api.create h.to_markdown, date: date
+        OrgDayone.api.create_by_ifttt h.to_markdown
       end
     end
 

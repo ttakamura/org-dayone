@@ -6,33 +6,57 @@ module OrgDayone
     include Logging
 
     def create body, date: nil
+      try_create(body) do
+        journal_option = "-j='~/Library/Group Containers/5U8NS4GX82.dayoneapp2/Data/Auto Import/Default Journal.dayone'"
+        date_option    = date ? "--date='#{date}' " : " "
+
+        file = Tempfile.new('dayone')
+        begin
+          file.write body
+          file.flush
+          cmd = "cat #{file.path} | dayone #{journal_option} #{date_option} new"
+          puts cmd
+          res = `#{cmd}`.chomp
+          if m = res.match(/New entry : (.+)$/)
+            commit body, m[1]
+            true
+          else
+            raise "Invalid the response from DayOne - #{res}"
+          end
+        ensure
+          file.close!
+        end
+      end
+    end
+
+    def create_by_ifttt body, secret: nil
+      try_create(body) do
+        event = 'post_dayone'
+        response = HTTParty.post("https://maker.ifttt.com/trigger/#{event}/with/key/#{secret}", {
+                                   body: {value1: body}.to_json,
+                                   headers: {'Content-Type' => 'application/json'}
+                                 })
+        if response.code == 200
+          log.info response.body
+        else
+          log.error response.inspect
+          raise response.body
+        end
+        response
+      end
+    end
+
+    private
+    def try_create body, &block
       if has_post?(body)
         log.info "Skip already posted in DayOne - #{body}"
         return false
       else
         log.info "Create new post - #{body}"
-      end
-
-      journal_option = "-j='~/Library/Group Containers/5U8NS4GX82.dayoneapp2/Data/Auto Import/Default Journal.dayone'"
-      date_option    = date ? "--date='#{date}' " : " "
-
-      file = Tempfile.new('dayone')
-      begin
-        file.write body
-        file.flush
-        res = `cat #{file.path} | dayone #{journal_option} #{date_option} new`.chomp
-        if m = res.match(/New entry : (.+)$/)
-          commit body, m[1]
-          true
-        else
-          raise "Invalid the response from DayOne - #{res}"
-        end
-      ensure
-        file.close!
+        block.call
       end
     end
 
-    private
     def has_post? body
       !!OrgDayone.db[signature_of(body)]
     end
